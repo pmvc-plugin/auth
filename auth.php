@@ -7,8 +7,6 @@ class auth extends \PMVC\PlugIn
 {
     public function init()
     {
-        $this->loadClass('Logger');
-        $this->loadClass('ProviderModel');
     }
 
     public function loadClass(string $className)
@@ -22,6 +20,9 @@ class auth extends \PMVC\PlugIn
     {
         $className = ucfirst($ProviderName).'Provider';
         if (!class_exists(__NAMESPACE__.'\\'.$className)) {
+            $this->loadClass('Logger');
+            $this->loadClass('User');
+            $this->loadClass('ProviderModel');
             $file = __DIR__.'/src/providers/'.$className.'.php';
             \PMVC\l($file);
         }
@@ -29,14 +30,24 @@ class auth extends \PMVC\PlugIn
         return new $class($ProviderName, $config);
     }
 
-    public function Login()
+
+    public function login()
     {
         $config = $this->fb();
         $provider = $this->getProvider('facebook',$config['providers']['Facebook']);
-        var_dump($provider);
+        $provider->endpoint = 'http://devel.cometw.com/199nt/index.php/auth/success';
+        return $provider->loginBegin();
     }
 
-    public function Logout()
+    public function loginBack($request)
+    {
+        $config = $this->fb();
+        $provider = $this->getProvider('facebook',$config['providers']['Facebook']);
+        $provider->loginFinish($request);
+        return $provider;
+    }
+
+    public function logout()
     {
 
     }
