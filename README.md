@@ -7,6 +7,10 @@
 auth
 ===============
 
+## Facebook sdk v4+
+https://github.com/facebook/facebook-php-sdk-v4
+
+
 ## Install with Composer
 ### 1. Download composer
    * mkdir test_folder
