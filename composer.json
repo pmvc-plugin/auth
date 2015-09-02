@@ -12,8 +12,7 @@
     ],
     "require": {
         "pmvc/pmvc": "*",
-        "facebook/php-sdk-v4": "~5.0",
-        "hybridauth/hybridauth": "*"
+        "facebook/php-sdk-v4": "~5.0"
     },
     "minimum-stability": "dev"
 }

@@ -40,7 +40,9 @@ class auth extends \PMVC\PlugIn
 
     public function initSession()
     {
-        \PMVC\plug('guid')->getDb('session');
+        if (\PMVC\exists('guid','plugin')) {
+            \PMVC\plug('guid')->getDb('session');
+        }
         $session_key = 'PMVC_AUTHENTICATION';
         if (!isset($_SESSION[$session_key])) {
             $_SESSION[$session_key] = new \PMVC\HashMap();
@@ -53,11 +55,11 @@ class auth extends \PMVC\PlugIn
     {
         $config = $this->fb();
         $provider = $this->initProvider('facebook',$config['providers']['Facebook']);
-        $provider->endpoint = 'http://devel.cometw.com/199nt/index.php/auth/success';
+        $provider->endpoint = $this['return'];
         return $provider->loginBegin();
     }
 
-    public function loginBack($request)
+    public function loginReturn($request)
     {
         $config = $this->fb();
         $provider = $this->initProvider('facebook',$config['providers']['Facebook']);

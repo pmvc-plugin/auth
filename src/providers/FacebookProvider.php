@@ -17,7 +17,7 @@ use Facebook\Facebook;
 class FacebookProvider extends ProviderModel
 {
     // default permissions, and a lot of them. You can change them from the configuration by setting the scope to what you want/need
-    public $scope = "email, user_about_me, user_birthday, user_hometown, user_website,  publish_actions";
+    public $scope = "email, user_about_me, user_birthday, user_hometown, user_website";
 
     /**
     * IDp wrappers initializer
@@ -25,7 +25,7 @@ class FacebookProvider extends ProviderModel
     public function initialize()
     {
         if (! $this->config["keys"]["id"] || ! $this->config["keys"]["secret"]) {
-            throw new Exception("Your application id and secret are required in order to connect to {$this->providerId}.", 4);
+            throw new \Exception("Your application id and secret are required in order to connect to {$this->providerId}.", 4);
         }
         $auth = \PMVC\plug('auth');
 
@@ -52,6 +52,7 @@ class FacebookProvider extends ProviderModel
         $url = $helper->getLoginUrl($this->endpoint, explode(',',$this->scope));
         $store = $helper->getPersistentDataHandler();
         $this->params['state'] = $store->get('state');
+        $url .= '&display=popup';
         return $url;
     }
 
@@ -73,7 +74,7 @@ class FacebookProvider extends ProviderModel
     {
         // in case we get error_reason=user_denied&error=access_denied
         if (isset($request['error']) && $request['error'] == "access_denied") {
-            throw new Exception("Authentication failed! The user denied your request.", 5);
+            throw new \Exception("Authentication failed! The user denied your request.", 5);
         }
 
         // try to get the UID of the connected user from fb, should be > 0
@@ -122,12 +123,12 @@ class FacebookProvider extends ProviderModel
             $response = $this->api->get($url);
             $data = $response->getDecodedBody();
         } catch (FacebookApiException $e) {
-            throw new Exception("User profile request failed! {$this->providerId} returned an error: $e", 6);
+            throw new \Exception("User profile request failed! {$this->providerId} returned an error: $e", 6);
         }
 
         // if the provider identifier is not received, we assume the auth has failed
         if (! isset($data["id"])) {
-            throw new Exception("User profile request failed! {$this->providerId} api returned an invalid response.", 6);
+            throw new \Exception("User profile request failed! {$this->providerId} api returned an invalid response.", 6);
         }
 
         # store the user profile.
@@ -181,7 +182,7 @@ class FacebookProvider extends ProviderModel
                     return $coverOBJ->cover->source;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         }
 
         return "";
@@ -200,7 +201,7 @@ class FacebookProvider extends ProviderModel
             try {
                 $response = $this->api->api('/me/friends' . $apiCall);
             } catch (FacebookApiException $e) {
-                throw new Exception('User contacts request failed! {$this->providerId} returned an error: $e');
+                throw new \Exception('User contacts request failed! {$this->providerId} returned an error: $e');
             }
 
             // Prepare the next call if paging links have been returned
@@ -257,7 +258,7 @@ class FacebookProvider extends ProviderModel
             }
 
             if (is_null($access_token)) {
-                throw new Exception("Update user page failed, page not found or not writable!");
+                throw new \Exception("Update user page failed, page not found or not writable!");
             }
 
             $status[ 'access_token' ] = $access_token;
@@ -266,7 +267,7 @@ class FacebookProvider extends ProviderModel
         try {
             $response = $this->api->api('/' . $pageid . '/feed', 'post', $status);
         } catch (FacebookApiException $e) {
-            throw new Exception("Update user status failed! {$this->providerId} returned an error: $e");
+            throw new \Exception("Update user status failed! {$this->providerId} returned an error: $e");
         }
 
         return $response;
@@ -281,7 +282,7 @@ class FacebookProvider extends ProviderModel
         try {
             $postinfo = $this->api->api("/" . $postid);
         } catch (FacebookApiException $e) {
-            throw new Exception("Cannot retrieve user status! {$this->providerId} returned an error: $e");
+            throw new \Exception("Cannot retrieve user status! {$this->providerId} returned an error: $e");
         }
 
         return $postinfo;
@@ -294,13 +295,13 @@ class FacebookProvider extends ProviderModel
     public function getUserPages($writableonly = false)
     {
         if ((isset($this->config[ 'scope' ]) && strpos($this->config[ 'scope' ], 'manage_pages') === false) || (!isset($this->config[ 'scope' ]) && strpos($this->scope, 'manage_pages') === false)) {
-            throw new Exception("User status requires manage_page permission!");
+            throw new \Exception("User status requires manage_page permission!");
         }
 
         try {
             $pages = $this->api->api("/me/accounts", 'get');
         } catch (FacebookApiException $e) {
-            throw new Exception("Cannot retrieve user pages! {$this->providerId} returned an error: $e");
+            throw new \Exception("Cannot retrieve user pages! {$this->providerId} returned an error: $e");
         }
 
         if (!isset($pages[ 'data' ])) {
@@ -335,7 +336,7 @@ class FacebookProvider extends ProviderModel
                 $response = $this->api->api('/me/home');
             }
         } catch (FacebookApiException $e) {
-            throw new Exception("User activity stream request failed! {$this->providerId} returned an error: $e");
+            throw new \Exception("User activity stream request failed! {$this->providerId} returned an error: $e");
         }
 
         if (! $response || ! count($response['data'])) {
