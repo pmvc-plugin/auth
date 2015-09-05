@@ -10,6 +10,15 @@ class auth extends \PMVC\PlugIn
         $this->initSession();
     }
 
+    public function initSession()
+    {
+        $session_key = 'PMVC_AUTHENTICATION';
+        if (!isset($_SESSION[$session_key])) {
+            $_SESSION[$session_key] = new \PMVC\HashMap();
+        }
+        $this['storage'] = $_SESSION[$session_key];
+    }
+
     public function loadClass(string $className)
     {
         if (!class_exists(__NAMESPACE__.'\\'.$className)) {
@@ -17,9 +26,9 @@ class auth extends \PMVC\PlugIn
         }
     }
 
-    public function initProvider($ProviderName,$config)
+    public function initProvider($providerName,$config)
     {
-        $className = ucfirst($ProviderName).'Provider';
+        $className = ucfirst($providerName).'Provider';
         if (!class_exists(__NAMESPACE__.'\\'.$className)) {
             $this->loadClass('Logger');
             $this->loadClass('User');
@@ -28,66 +37,53 @@ class auth extends \PMVC\PlugIn
             \PMVC\l($file);
         }
         $class = __NAMESPACE__.'\\'.$className;
-        return new $class($ProviderName, $config, $this['storage']);
+        return new $class($providerName, $config, $this['storage']);
     }
 
-    public function getProvider()
+    public function getProvider($providerName)
     {
-        $config = $this->fb();
-        $provider = $this->initProvider('facebook',$config['providers']['Facebook']);
+        $config = $this->getConfig($providerName);
+        $provider = $this->initProvider($providerName,$config);
         return $provider;
     }
 
-    public function initSession()
+    public function login($providerName='facebook')
     {
-        if (\PMVC\exists('guid','plugin')) {
-            \PMVC\plug('guid')->getDb('session');
-        }
-        $session_key = 'PMVC_AUTHENTICATION';
-        if (!isset($_SESSION[$session_key])) {
-            $_SESSION[$session_key] = new \PMVC\HashMap();
-        }
-        $this['storage'] = $_SESSION[$session_key];
-    }
-
-
-    public function login()
-    {
-        $config = $this->fb();
-        $provider = $this->initProvider('facebook',$config['providers']['Facebook']);
+        $config = $this->getConfig($providerName);
+        $provider = $this->initProvider($providerName,$config);
         $provider->endpoint = $this['return'];
         return $provider->loginBegin();
     }
 
-    public function loginReturn($request)
+    public function loginReturn($request,$providerName='facebook')
     {
-        $config = $this->fb();
-        $provider = $this->initProvider('facebook',$config['providers']['Facebook']);
+        $config = $this->getConfig($providerName);
+        $provider = $this->initProvider($providerName,$config);
         $provider->loginFinish($request);
         return $provider;
     }
-
 
     public function logout()
     {
 
     }
 
-    public function fb()
+    public function getConfig($providerName)
     {
-        $config = array(
-              "base_url" => "http://devel.cometw.com/199nt/index.php/auth",
-              "providers" => array (
-                "Facebook" => array (
-                  "enabled" => true,
-                  "keys"    => array (
-                    "id" => \PMVC\getOption('FACEBOOK_APP_ID'),
-                    "secret" => \PMVC\getOption('FACEBOOK_APP_SECRET'),
-                  ),
-                  "scope"   => "email, user_about_me, user_birthday, user_hometown", // optional
-                  "display" => "popup" // optional
-        )));
-        return $config;
+        $dot = \PMVC\plug('dotenv');
+        $fileName = '.env.auth_'.$providerName;
+        return $dot->getArray($fileName);
+    }
+
+    public function oauthSign($url, $secret, $token=null)
+    {
+        if (!class_exists(__NAMESPACE__.'\OAuthSignatureMethod_HMAC_SHA1')) {
+            $this->loadClass('OAuthSignatureMethod');
+            $this->loadClass('OAuthSignatureMethod_HMAC_SHA1');
+        }
+        $oauth = new OAuthSignatureMethod_HMAC_SHA1();
+        $sign = $oauth->build_signature($url, $secret, $token);
+        return $sign;
     }
 }
 

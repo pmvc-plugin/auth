@@ -6,10 +6,13 @@ class User
 
     public $profile;
 
-    public $identifier;
+    public $providerId;
+
+    public $timestamp = null;
 
     public function __construct()
     {
         $this->profile = new \PMVC\HashMap();
+        $this->timestamp = time();
     }
 }

@@ -24,7 +24,7 @@ class FacebookProvider extends ProviderModel
     */
     public function initialize()
     {
-        if (! $this->config["keys"]["id"] || ! $this->config["keys"]["secret"]) {
+        if (! $this->config['FACEBOOK_APP_ID'] || ! $this->config['FACEBOOK_APP_SECRET']) {
             throw new \Exception("Your application id and secret are required in order to connect to {$this->providerId}.", 4);
         }
         $auth = \PMVC\plug('auth');
@@ -33,8 +33,8 @@ class FacebookProvider extends ProviderModel
             BaseFacebook::$CURL_OPTS[CURLOPT_PROXY] = $auth["proxy"];
         }
         $this->api = new Facebook(array( 
-            'app_id' => $this->config["keys"]["id"], 
-            'app_secret' => $this->config["keys"]["secret"], 
+            'app_id' => $this->config['FACEBOOK_APP_ID'], 
+            'app_secret' => $this->config['FACEBOOK_APP_SECRET'], 
             'persistent_data_handler' => 'memory'
         ));
 
@@ -163,7 +163,7 @@ class FacebookProvider extends ProviderModel
             $this->user->profile->birthYear  = (int) $birthday_year;
         }
 
-        return $this->user->profile;
+        return $this->user;
     }
 
     /**
