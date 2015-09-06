@@ -3,16 +3,28 @@ namespace PMVC\PlugIn\auth;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\auth';
 
+class AuthKey {
+    const SESSION_KEY = 'pmvc_plugin_auth';
+    const CURRENT_USER = 'current_user';
+}
+
+
 class auth extends \PMVC\PlugIn
 {
+    public function getKeys()
+    {
+        return new AuthKey();
+    }
+
     public function init()
     {
         $this->initSession();
+        $this['session_key'] = AuthKey::SESSION_KEY;
     }
 
     public function initSession()
     {
-        $session_key = 'PMVC_AUTHENTICATION';
+        $session_key = AuthKey::SESSION_KEY;
         if (!isset($_SESSION[$session_key])) {
             $_SESSION[$session_key] = new \PMVC\HashMap();
         }
@@ -31,7 +43,6 @@ class auth extends \PMVC\PlugIn
         $className = ucfirst($providerName).'Provider';
         if (!class_exists(__NAMESPACE__.'\\'.$className)) {
             $this->loadClass('Logger');
-            $this->loadClass('User');
             $this->loadClass('ProviderModel');
             $file = __DIR__.'/src/providers/'.$className.'.php';
             \PMVC\l($file);

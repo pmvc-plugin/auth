@@ -76,8 +76,10 @@ abstract class ProviderModel
         $this->config = $config;
 
         // new user instance
-        $this->user = new User();
+        $this->user = new \PMVC\HashMap();
+        $this->user->profile = new \PMVC\HashMap();
         $this->user->providerId = $providerId;
+        $this->user->timestamp = time();
 
         // initialize the current provider adapter
         $this->initialize();
