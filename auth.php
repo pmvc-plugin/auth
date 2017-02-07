@@ -31,7 +31,7 @@ class auth extends \PMVC\PlugIn
         $this['storage'] = $_SESSION[$session_key];
     }
 
-    public function loadClass(string $className)
+    public function loadClass($className)
     {
         if (!class_exists(__NAMESPACE__.'\\'.$className)) {
             \PMVC\l(__DIR__.'/src/'.$className.'.php');
