@@ -12,6 +12,7 @@
     ],
     "require": {
         "pmvc/pmvc": "*",
+        "pmvc-plugin/session": "*",
         "facebook/graph-sdk": "*"
     },
     "minimum-stability": "dev"

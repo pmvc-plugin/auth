@@ -4,6 +4,12 @@ PMVC\addPlugInFolders(['../']);
 class AuthTest extends PHPUnit_Framework_TestCase
 {
     private $_plug = 'auth';
+
+    function setup()
+    {
+        PMVC\plug('session', ['disable_start'=>true]);
+    }
+
     function testPlugin()
     {
         ob_start();
