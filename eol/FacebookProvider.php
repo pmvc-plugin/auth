@@ -1,6 +1,9 @@
 <?php
+
 namespace PMVC\PlugIn\auth;
+
 use Facebook\Facebook;
+
 /*!
 * HybridAuth
 * http://hybridauth.sourceforge.net | http://github.com/hybridauth/hybridauth
@@ -94,8 +97,6 @@ class FacebookProvider extends ProviderModel
     public function logout()
     {
         $this->api->destroySession();
-
-        parent::logout();
     }
 
     /**

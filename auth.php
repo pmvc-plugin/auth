@@ -8,6 +8,7 @@ class AuthKey {
     const CURRENT_USER = 'current_user';
 }
 
+\PMVC\l(__DIR__.'/src/BaseProvider.php');
 
 class auth extends \PMVC\PlugIn
 {
@@ -24,6 +25,7 @@ class auth extends \PMVC\PlugIn
 
     public function initSession()
     {
+        \PMVC\initPlugIn(['session'=>null]);
         $session_key = AuthKey::SESSION_KEY;
         if (!isset($_SESSION[$session_key])) {
             $_SESSION[$session_key] = new \PMVC\HashMap();
@@ -31,45 +33,27 @@ class auth extends \PMVC\PlugIn
         $this['storage'] = $_SESSION[$session_key];
     }
 
-    public function loadClass($className)
-    {
-        if (!class_exists(__NAMESPACE__.'\\'.$className)) {
-            \PMVC\l(__DIR__.'/src/'.$className.'.php');
-        }
-    }
-
-    public function initProvider($providerName,$config)
-    {
-        $className = ucfirst($providerName).'Provider';
-        if (!class_exists(__NAMESPACE__.'\\'.$className)) {
-            $this->loadClass('Logger');
-            $this->loadClass('ProviderModel');
-            $file = __DIR__.'/src/providers/'.$className.'.php';
-            \PMVC\l($file);
-        }
-        $class = __NAMESPACE__.'\\'.$className;
-        return new $class($providerName, $config, $this['storage']);
-    }
-
     public function getProvider($providerName)
     {
-        $config = $this->getConfig($providerName);
-        $provider = $this->initProvider($providerName,$config);
-        return $provider;
+        if (!isset($this[$providerName])) {
+            $config = $this->getConfig($providerName);
+            $provider = $this->$providerName($config);
+        } else {
+            $provider = $this[$providerName];
+        }
+        return $this[$providerName]; 
     }
 
     public function login($providerName='facebook')
     {
-        $config = $this->getConfig($providerName);
-        $provider = $this->initProvider($providerName,$config);
-        $provider->endpoint = $this['return'];
+        $provider = $this->getProvider($providerName);
+        $provider->loginReturnUrl = $this['return'];
         return $provider->loginBegin();
     }
 
     public function loginReturn($request,$providerName='facebook')
     {
-        $config = $this->getConfig($providerName);
-        $provider = $this->initProvider($providerName,$config);
+        $provider = $this->getProvider($providerName);
         $provider->loginFinish($request);
         return $provider;
     }
@@ -86,15 +70,21 @@ class auth extends \PMVC\PlugIn
         return $dot->getArray($fileName);
     }
 
+    public function loadClass($className)
+    {
+        if (!class_exists(__NAMESPACE__.'\\'.$className)) {
+            \PMVC\l(__DIR__.'/src/'.$className.'.php');
+        }
+    }
+
     public function oauthSign($url, $secret, $token=null)
     {
-        if (!class_exists(__NAMESPACE__.'\OAuthSignatureMethod_HMAC_SHA1')) {
+        if (!$this['oauth']) {
             $this->loadClass('OAuthSignatureMethod');
             $this->loadClass('OAuthSignatureMethod_HMAC_SHA1');
+            $this['oauth'] = new OAuthSignatureMethod_HMAC_SHA1();
         }
-        $oauth = new OAuthSignatureMethod_HMAC_SHA1();
-        $sign = $oauth->build_signature($url, $secret, $token);
+        $sign = $this['oauth']->build_signature($url, $secret, $token);
         return $sign;
     }
 }
-
