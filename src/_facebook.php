@@ -17,13 +17,12 @@ class FacebookProvider extends BaseProvider
 
     /**
      * Default Permission
+     * https://developers.facebook.com/docs/facebook-login/permissions/review
      */
     public $permission = [
         'email',
-        'user_about_me',
-        'user_birthday',
-        'user_hometown',
-        'user_website'
+        'public_profile',
+        'user_friends'
     ];
 
     public function __invoke($configs)
