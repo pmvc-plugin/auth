@@ -29,8 +29,8 @@ class FacebookProvider extends BaseProvider
     {
         \PMVC\set($this, $configs);
         $this->api = new Facebook(array( 
-            'app_id' => $this['FACEBOOK_APP_ID'], 
-            'app_secret' => $this['FACEBOOK_APP_SECRET'], 
+            'app_id' => \PMVC\get($this['app'], 'id'), 
+            'app_secret' => \PMVC\get($this['app'], 'secret'), 
             'persistent_data_handler' => 'memory'
         ));
         return $this;

@@ -24,27 +24,31 @@ class auth extends \PMVC\PlugIn
         $this['storage'] = $_SESSION[SESSION_KEY];
     }
 
-    public function getProvider($providerName)
+    public function getProvider($providerId)
     {
-        if (!isset($this[$providerName])) {
-            $config = $this->getConfig($providerName);
-            $provider = $this->$providerName($config);
+        if (!isset($this[$providerId])) {
+            $config = $this->getConfig($providerId);
+            $name = \PMVC\get($config, 'name');
+            $provider = $this->$name($config);
+            if ($name!==$providerId) {
+                $this[$providerId] = $provider; 
+            }
         } else {
-            $provider = $this[$providerName];
+            $provider = $this[$providerId];
         }
-        return $this[$providerName]; 
+        return $provider; 
     }
 
-    public function login($providerName='facebook')
+    public function login($providerId='facebook')
     {
-        $provider = $this->getProvider($providerName);
+        $provider = $this->getProvider($providerId);
         $provider->loginReturnUrl = $this['return'];
         return $provider->loginBegin();
     }
 
-    public function loginReturn($request,$providerName='facebook')
+    public function loginReturn($request,$providerId='facebook')
     {
-        $provider = $this->getProvider($providerName);
+        $provider = $this->getProvider($providerId);
         return $provider->loginFinish($request);
     }
 
@@ -53,11 +57,10 @@ class auth extends \PMVC\PlugIn
 
     }
 
-    public function getConfig($providerName)
+    public function getConfig($providerId)
     {
-        $dot = \PMVC\plug('dotenv');
-        $fileName = '.env.auth_'.$providerName;
-        return $dot->getArray($fileName);
+        $options = \PMVC\getOption('AUTH');
+        return \PMVC\get($options, $providerId, []);
     }
 
     public function loadClass($className)
