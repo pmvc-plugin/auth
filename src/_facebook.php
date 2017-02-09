@@ -66,8 +66,9 @@ class FacebookProvider extends BaseProvider
         // get token fail 
         $token = $this->isLogin();
         if ( !$token ) {
-            trigger_error('Authentication failed!');
+            return !trigger_error('Authentication failed!');
         }
+        return true;
     }
 
     public function isLogin()

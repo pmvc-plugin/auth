@@ -3,34 +3,25 @@ namespace PMVC\PlugIn\auth;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\auth';
 
-class AuthKey {
-    const SESSION_KEY = 'pmvc_plugin_auth';
-    const CURRENT_USER = 'current_user';
-}
+const SESSION_KEY = 'pmvc_plugin_auth';
 
 \PMVC\l(__DIR__.'/src/BaseProvider.php');
 
 class auth extends \PMVC\PlugIn
 {
-    public function getKeys()
-    {
-        return new AuthKey();
-    }
 
     public function init()
     {
         $this->initSession();
-        $this['session_key'] = AuthKey::SESSION_KEY;
     }
 
     public function initSession()
     {
         \PMVC\initPlugIn(['session'=>null]);
-        $session_key = AuthKey::SESSION_KEY;
-        if (!isset($_SESSION[$session_key])) {
-            $_SESSION[$session_key] = new \PMVC\HashMap();
+        if (!isset($_SESSION[SESSION_KEY])) {
+            $_SESSION[SESSION_KEY] = new \PMVC\HashMap();
         }
-        $this['storage'] = $_SESSION[$session_key];
+        $this['storage'] = $_SESSION[SESSION_KEY];
     }
 
     public function getProvider($providerName)
@@ -54,8 +45,7 @@ class auth extends \PMVC\PlugIn
     public function loginReturn($request,$providerName='facebook')
     {
         $provider = $this->getProvider($providerName);
-        $provider->loginFinish($request);
-        return $provider;
+        return $provider->loginFinish($request);
     }
 
     public function logout()
