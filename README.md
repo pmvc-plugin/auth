@@ -7,11 +7,8 @@
 auth
 ===============
 
-## Facebook sdk v4+
-https://github.com/facebook/facebook-php-sdk-v4
-
 ## Login Process
-
+call loginBegin -> ask third party server -> call loginFinish -> handle authorization result
 
 
 ## Install with Composer

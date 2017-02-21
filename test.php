@@ -7,7 +7,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
 
     function setup()
     {
-        PMVC\plug('session', ['disable_start'=>true]);
+        PMVC\plug('session', ['disableStart'=>true]);
     }
 
     function testPlugin()

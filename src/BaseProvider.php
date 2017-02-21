@@ -47,11 +47,6 @@ abstract class BaseProvider extends HashMap
         return !trigger_error('Provider not Implement Logout');
     }
 
-    public function isLogin()
-    {
-        return !trigger_error('Provider not Implement isLogin');
-    }
-
     public function getUserProfile()
     {
         return !trigger_error('Provider not Implement getUserProfile');

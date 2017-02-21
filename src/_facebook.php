@@ -25,7 +25,7 @@ class FacebookProvider extends BaseProvider
         'user_friends'
     ];
 
-    public function __invoke($configs)
+    public function &__invoke($configs = null)
     {
         \PMVC\set($this, $configs);
         $this->api = new Facebook(array( 
@@ -63,14 +63,14 @@ class FacebookProvider extends BaseProvider
         }
 
         // get token fail 
-        $token = $this->isLogin();
+        $token = $this->handleToken();
         if ( !$token ) {
             return !trigger_error('Authentication failed!');
         }
         return true;
     }
 
-    public function isLogin()
+    public function handleToken()
     {
         $helper = $this->api->getRedirectLoginHelper();
         $store = $helper->getPersistentDataHandler();
