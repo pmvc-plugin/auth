@@ -17,7 +17,7 @@ class auth extends \PMVC\PlugIn
 
     public function initSession()
     {
-        \PMVC\initPlugIn(['session'=>null]);
+        \PMVC\plug('session')->start();
         if (!isset($_SESSION[SESSION_KEY])) {
             $_SESSION[SESSION_KEY] = new \PMVC\HashMap();
         }
