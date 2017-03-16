@@ -32,12 +32,14 @@ abstract class BaseProvider extends HashMap
 
     public function __construct($caller)
     {
-        $this->user = new HashMap();
         $storage = $caller['storage'];
         if (!isset($storage[$this->providerName])) {
             $storage[$this->providerName] = new HashMap(); 
         }
         $this->storage = $storage[$this->providerName];
+        $this->storage['user'] = new HashMap();
+        $this->user = new BaseUser($this->storage['user']);
+        $this->user->setProvider($this->providerName);
     }
     abstract public function loginBegin();
     abstract public function loginFinish(array $request);

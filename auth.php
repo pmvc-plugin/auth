@@ -6,6 +6,7 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\auth';
 const SESSION_KEY = 'pmvc_plugin_auth';
 
 \PMVC\l(__DIR__.'/src/BaseProvider.php');
+\PMVC\l(__DIR__.'/src/BaseUser.php');
 
 class auth extends \PMVC\PlugIn
 {

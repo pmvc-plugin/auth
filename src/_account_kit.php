@@ -22,8 +22,9 @@ class AccountKitProvider extends BaseProvider
 
     public function loginFinish(array $request)
     {
-        if ($this->getToken('access_token')) {
-            return $this->getToken('access_token');
+        $access_token = $this->getToken('access_token');
+        if (!empty($access_token)) {
+            return $access_token;
         }
         $app = \PMVC\get($this,'app');
         $version = \PMVC\get($app, 'version');
@@ -50,10 +51,13 @@ class AccountKitProvider extends BaseProvider
                     'message'
                 ]));
             }
-            $this->setToken(
-                'access_token', 
-                \PMVC\get($body,'access_token')
-            );
+            $token = \PMVC\get($body,'access_token');
+            if (!empty($token)) {
+                $this->setToken(
+                    'access_token', 
+                    $token
+                );
+            }
         });
         $curl->process();
         return $this->getToken('access_token');
