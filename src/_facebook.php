@@ -87,7 +87,7 @@ class FacebookProvider extends BaseProvider
         return $accessToken;
     }
 
-    public function getUserProfile()
+    public function initUser()
     {
 
     }

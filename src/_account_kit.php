@@ -62,4 +62,17 @@ class AccountKitProvider extends BaseProvider
         $curl->process();
         return $this->getToken('access_token');
     }
+
+    public function initUser()
+    {
+        $version = \PMVC\value($this, ['app','version']);
+        $meUrl = str_replace('[VERSION]', $version, ACCOUNT_KIT_ME_URL);
+        $oUrl = \PMVC\plug('url')->getUrl($meUrl);
+        $oUlr->query['access_token'] = $this->getToken('access_token');
+        $curl = \PMVC\plug('curl');
+        $curl->get($oUrl, function($r) {
+            \PMVC\d($r);
+        });
+        $curl->process();
+    }
 }

@@ -50,12 +50,21 @@ class auth extends \PMVC\PlugIn
     public function loginReturn($request,$providerId='facebook')
     {
         $provider = $this->getProvider($providerId);
-        return $provider->loginFinish($request);
+        $isLogin = $provider->loginFinish($request);
+        if ($isLogin) {
+            $provider->initUser();
+        }
+        return $bool;
     }
 
     public function logout()
     {
 
+    }
+
+    public function setIsLogin()
+    {
+        $this['storage']['isLogin'] = true;
     }
 
     public function getConfig($providerId)

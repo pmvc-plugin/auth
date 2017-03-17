@@ -43,6 +43,7 @@ abstract class BaseProvider extends HashMap
     }
     abstract public function loginBegin();
     abstract public function loginFinish(array $request);
+    abstract public function initUser();
 
     public function logout()
     {
