@@ -54,7 +54,7 @@ class auth extends \PMVC\PlugIn
         if ($isLogin) {
             $provider->initUser();
         }
-        return $bool;
+        return $isLogin;
     }
 
     public function logout()

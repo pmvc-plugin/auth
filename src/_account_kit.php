@@ -66,13 +66,20 @@ class AccountKitProvider extends BaseProvider
     public function initUser()
     {
         $version = \PMVC\value($this, ['app','version']);
+        $secret = \PMVC\value($this, ['app', 'secret']);
         $meUrl = str_replace('[VERSION]', $version, ACCOUNT_KIT_ME_URL);
-        $oUrl = \PMVC\plug('url')->getUrl($meUrl);
-        $oUlr->query['access_token'] = $this->getToken('access_token');
+        $access_token = $this->getToken('access_token');
+        $appsecret_proof = hash_hmac('sha256', $access_token, $secret);
         $curl = \PMVC\plug('curl');
-        $curl->get($oUrl, function($r) {
-            \PMVC\d($r);
-        });
+        $curl->get($meUrl, function($r) {
+            $json = \PMVC\fromJson($r->body);
+            \PMVC\d($json);
+            $this->user['id'] = \PMVC\get($json, 'id');
+            $this->user['email'] = \PMVC\value($json, ['email','address']);
+        }, [
+            'access_token'=>$access_token,
+            'appsecret_proof'=>$appsecret_proof
+        ]);
         $curl->process();
     }
 }

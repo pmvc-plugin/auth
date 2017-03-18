@@ -37,7 +37,9 @@ abstract class BaseProvider extends HashMap
             $storage[$this->providerName] = new HashMap(); 
         }
         $this->storage = $storage[$this->providerName];
-        $this->storage['user'] = new HashMap();
+        if (!isset($this->storage['user'])) {
+            $this->storage['user'] = new HashMap();
+        }
         $this->user = new BaseUser($this->storage['user']);
         $this->user->setProvider($this->providerName);
     }
