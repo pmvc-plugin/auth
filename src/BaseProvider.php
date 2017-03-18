@@ -6,9 +6,9 @@ use PMVC\HashMap;
 abstract class BaseProvider extends HashMap
 {
     /**
-    * Provider Name 
+    * Provider id 
     */
-    protected $providerName;
+    protected $providerId;
 
     /**
     * Login Return Url
@@ -32,16 +32,19 @@ abstract class BaseProvider extends HashMap
 
     public function __construct($caller)
     {
-        $storage = $caller['storage'];
-        if (!isset($storage[$this->providerName])) {
-            $storage[$this->providerName] = new HashMap(); 
+        if (empty($this->providerId)) {
+            return !trigger_error('Need defined provider id');
         }
-        $this->storage = $storage[$this->providerName];
+        $storage = $caller['storage'];
+        if (!isset($storage[$this->providerId])) {
+            $storage[$this->providerId] = new HashMap(); 
+        }
+        $this->storage = $storage[$this->providerId];
         if (!isset($this->storage['user'])) {
             $this->storage['user'] = new HashMap();
         }
         $this->user = new BaseUser($this->storage['user']);
-        $this->user->setProvider($this->providerName);
+        $this->user->setProvider($this->providerId);
     }
     abstract public function loginBegin();
     abstract public function loginFinish(array $request);
@@ -50,11 +53,6 @@ abstract class BaseProvider extends HashMap
     public function logout()
     {
         return !trigger_error('Provider not Implement Logout');
-    }
-
-    public function getUserProfile()
-    {
-        return !trigger_error('Provider not Implement getUserProfile');
     }
 
     public function setToken($tokenKey, $value)
@@ -68,8 +66,8 @@ abstract class BaseProvider extends HashMap
         return $this->storage[$tokenKey];
     }
 
-    public function getProviderName()
+    public function getProviderId()
     {
-        return $this->providerName;
+        return $this->providerId;
     }
 }

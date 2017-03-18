@@ -13,7 +13,7 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\FacebookProvider';
 class FacebookProvider extends BaseProvider 
 {
 
-    protected $providerName = 'facebook'; 
+    protected $providerId = 'facebook'; 
 
     /**
      * Default Permission

@@ -8,7 +8,7 @@ const ACCOUNT_KIT_ME_URL='https://graph.accountkit.com/[VERSION]/me';
 
 class AccountKitProvider extends BaseProvider
 {
-    protected $providerName = 'account_kit'; 
+    protected $providerId = 'accountKit'; 
 
     public function &__invoke($configs = null)
     {

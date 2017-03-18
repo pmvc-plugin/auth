@@ -14,10 +14,10 @@ class BaseUser extends HashMap
         $this->state = $state;
     }
 
-    public function setProvider($providerName)
+    public function setProvider($providerId)
     {
-        $this->_provider = $providerName;
-        $this->_db = ucfirst($providerName).'Users';
+        $this->_provider = $providerId;
+        $this->_db = ucfirst($providerId).'Users';
     }
 
     public function getDb()
