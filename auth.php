@@ -69,22 +69,15 @@ class auth extends \PMVC\PlugIn
 
     public function getConfig($providerId)
     {
-        $options = \PMVC\getOption('AUTH');
-        return \PMVC\get($options, $providerId, []);
-    }
-
-    public function loadClass($className)
-    {
-        if (!class_exists(__NAMESPACE__.'\\'.$className)) {
-            \PMVC\l(__DIR__.'/src/'.$className.'.php');
-        }
+        $providers = \PMVC\get($this, 'providers');
+        return \PMVC\get($providers, $providerId, []);
     }
 
     public function oauthSign($url, $secret, $token=null)
     {
         if (!$this['oauth']) {
-            $this->loadClass('OAuthSignatureMethod');
-            $this->loadClass('OAuthSignatureMethod_HMAC_SHA1');
+            \PMVC\l(__DIR__.'/src/OAuthSignatureMethod.php');
+            \PMVC\l(__DIR__.'/src/OAuthSignatureMethod_HMAC_SHA1.php');
             $this['oauth'] = new OAuthSignatureMethod_HMAC_SHA1();
         }
         $sign = $this['oauth']->build_signature($url, $secret, $token);
