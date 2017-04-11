@@ -19,4 +19,11 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $this->assertContains($this->_plug,$output);
     }
 
+    function testHashIsAuth()
+    {
+        $p = \PMVC\plug($this->_plug);
+        $hash = $p->hashIsAuth('foo', 'bar');
+        $this->assertEquals('ba4TuD1iozTxw', $hash);
+    }
+
 }
