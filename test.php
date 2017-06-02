@@ -38,6 +38,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
     function testSetIsAuthorized()
     {
         $p = \PMVC\plug($this->_plug);
+        $_COOKIE[$p['bcookie']] = 'fakeB';
         $p->setIsLogin(); 
         $store = $p['store'];
         $this->assertNotNull($store['authKey']);
@@ -64,6 +65,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
    function testIsExpire()
    {
         $p = \PMVC\plug($this->_plug);
+        $_COOKIE[$p['bcookie']] = 'fakeB';
         $privateKey = $p->setIsLogin(); 
         $store = $p['store'];
         $_COOKIE[$store['authKey']] = $privateKey;

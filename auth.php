@@ -120,10 +120,10 @@ class auth extends \PMVC\PlugIn
         $guid = \PMVC\plug('guid');
         $key = $guid->gen();
         $value = $guid->gen();
-        $store['authKey'] = $key; 
+        $store['authKey'] = $key;
         $store['authHash'] = $this->hashIsAuth(
             $value,
-            \PMVC\get($_COOKIE, $this['bcookie']) 
+            \PMVC\get($_COOKIE, $this['bcookie'])
         );
         $session = \PMVC\plug('session');
         $session->setCookie($key, $value);
@@ -132,6 +132,9 @@ class auth extends \PMVC\PlugIn
 
     public function hashIsAuth($authValue, $bcookie)
     {
+        if (empty($bcookie)) {
+            return !trigger_error('Can\'t get browser cookie');
+        }
         return crypt(
             $authValue,
             $bcookie
