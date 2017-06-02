@@ -13,6 +13,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
 
     function setup()
     {
+        \PMVC\unplug($this->_plug);
     }
 
     function testPlugin()
@@ -55,5 +56,20 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $_COOKIE[$store['authKey']] = $privateKey;
         $result = $p->isLogin();
         $this->assertTrue($result);
+   }
+
+   /**
+    * @runInSeparateProcess
+    */
+   function testIsExpire()
+   {
+        $p = \PMVC\plug($this->_plug);
+        $privateKey = $p->setIsLogin(); 
+        $store = $p['store'];
+        $_COOKIE[$store['authKey']] = $privateKey;
+        $p['lifetime'] = 100;
+        $this->assertFalse($p->isExpire());
+        $p['lifetime'] = -1;
+        $this->assertTrue($p->isExpire());
    }
 }

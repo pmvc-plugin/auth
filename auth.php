@@ -12,8 +12,20 @@ class auth extends \PMVC\PlugIn
     const SESSION_KEY = 'pmvc_plugin_auth';
     public function init()
     {
+        \PMVC\arrayReplace(
+            $this,
+            \PMVC\get($this),
+            $this->defaultValue()
+        );
         $this->initSession();
-        $this['bcookie'] = 'b';
+    }
+
+    public function defaultValue()
+    {
+        return [
+            'bcookie'=>'b',
+            'lifetime'=>86400*7,
+        ];
     }
 
     public function initSession()
@@ -87,6 +99,19 @@ class auth extends \PMVC\PlugIn
             return false;
         }
         return true;
+    }
+
+    public function isExpire()
+    {
+        $store = $this['store'];
+        $key = $store['authKey'];
+        $value = \PMVC\get($_COOKIE, $key);
+        $time = \PMVC\plug('guid')->verify($value);
+        if ($time < date('YmdHis', time() - $this['lifetime'])) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function setIsLogin()
