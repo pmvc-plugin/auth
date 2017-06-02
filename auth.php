@@ -66,6 +66,7 @@ class auth extends \PMVC\PlugIn
         $session->setCookie($key, null);
         unset($store['authKey']);
         unset($store['authHash']);
+        unset($store['isRegistered']);
     }
 
     public function isLogin()
@@ -91,7 +92,6 @@ class auth extends \PMVC\PlugIn
     public function setIsLogin()
     {
         $store = $this['store'];
-        $store['isAuthorized'] = true;
         $guid = \PMVC\plug('guid');
         $key = $guid->gen();
         $value = $guid->gen();
@@ -111,6 +111,25 @@ class auth extends \PMVC\PlugIn
             $authValue,
             $bcookie
         );
+    }
+
+    public function setIsRegistered()
+    {
+        if (!$this->isLogin()) {
+            return false;
+        }
+        $store = $this['store'];
+        $store['isRegistered'] = true;
+        return true;
+    }
+
+    public function isRegistered()
+    {
+        if (!$this->isLogin()) {
+            return false;
+        }
+        $store = $this['store'];
+        return $store['isRegistered'];
     }
 
     public function getDefaultProvider()
