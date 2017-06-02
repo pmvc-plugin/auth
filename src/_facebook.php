@@ -47,7 +47,7 @@ class FacebookProvider extends BaseProvider
             $this->permission
         );
         $fbStore = $helper->getPersistentDataHandler();
-        $this->storage['state'] = $fbStore->get('state');
+        $this->store['state'] = $fbStore->get('state');
         $url .= '&display=popup';
         return $url;
     }
@@ -76,7 +76,7 @@ class FacebookProvider extends BaseProvider
         $store = $helper->getPersistentDataHandler();
         $store->set(
             'state',
-            \PMVC\get($this->storage, 'state')
+            \PMVC\get($this->store, 'state')
         );
         $accessToken = $helper->getAccessToken();
         // store facebook access token

@@ -37,7 +37,23 @@ class AuthTest extends PHPUnit_Framework_TestCase
     function testSetIsAuthorized()
     {
         $p = \PMVC\plug($this->_plug);
-        $p->setIsAuthorized(); 
+        $p->setIsLogin(); 
+        $store = $p['store'];
+        $this->assertNotNull($store['authKey']);
+        $this->assertNotNull($store['authHash']);
     }
 
+   /**
+    * @runInSeparateProcess
+    */
+   function testIsLogin()
+   {
+        $p = \PMVC\plug($this->_plug);
+        $_COOKIE[$p['bcookie']] = 'fakeB';
+        $privateKey = $p->setIsLogin(); 
+        $store = $p['store'];
+        $_COOKIE[$store['authKey']] = $privateKey;
+        $result = $p->isLogin();
+        $this->assertTrue($result);
+   }
 }

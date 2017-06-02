@@ -23,7 +23,7 @@ abstract class BaseProvider extends HashMap
     /**
     * Persistent Storage
     */
-    public $storage;
+    public $store;
 
     /**
     * Provider API
@@ -35,15 +35,15 @@ abstract class BaseProvider extends HashMap
         if (empty($this->providerId)) {
             return !trigger_error('Need defined provider id');
         }
-        $storage = $caller['storage'];
-        if (!isset($storage[$this->providerId])) {
-            $storage[$this->providerId] = new HashMap(); 
+        $store = $caller['store'];
+        if (!isset($store[$this->providerId])) {
+            $store[$this->providerId] = new HashMap(); 
         }
-        $this->storage = $storage[$this->providerId];
-        if (!isset($this->storage['user'])) {
-            $this->storage['user'] = new HashMap();
+        $this->store = $store[$this->providerId];
+        if (!isset($this->store['user'])) {
+            $this->store['user'] = new HashMap();
         }
-        $this->user = new BaseUser($this->storage['user']);
+        $this->user = new BaseUser($this->store['user']);
         $this->user->setProvider($this->providerId);
     }
     abstract public function loginBegin();
@@ -57,13 +57,13 @@ abstract class BaseProvider extends HashMap
 
     public function setToken($tokenKey, $value)
     {
-        $this->storage[$tokenKey] = $value;
-        return $this->storage[$tokenKey];
+        $this->store[$tokenKey] = $value;
+        return $this->store[$tokenKey];
     }
 
     public function getToken($tokenKey)
     {
-        return $this->storage[$tokenKey];
+        return $this->store[$tokenKey];
     }
 
     public function getProviderId()

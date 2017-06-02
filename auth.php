@@ -22,7 +22,7 @@ class auth extends \PMVC\PlugIn
         if (!isset($_SESSION[self::SESSION_KEY])) {
             $_SESSION[self::SESSION_KEY] = new \PMVC\HashMap();
         }
-        $this['storage'] = $_SESSION[self::SESSION_KEY];
+        $this['store'] = $_SESSION[self::SESSION_KEY];
     }
 
     public function getProvider($providerId)
@@ -50,29 +50,29 @@ class auth extends \PMVC\PlugIn
     public function loginReturn($request, $providerId)
     {
         $provider = $this->getProvider($providerId);
-        $isLogin = $provider->loginFinish($request);
-        if ($isLogin) {
+        $isAuthorized = $provider->loginFinish($request);
+        if ($isAuthorized) {
             $provider->initUser();
-            $this->setIsAuthorized();
+            $this->setIsLogin();
         }
-        return $isLogin;
+        return $isAuthorized;
     }
 
     public function logout()
     {
-        $storage = $this['storage'];
-        $key = $storage['authKey'];
+        $store = $this['store'];
+        $key = $store['authKey'];
         $session = \PMVC\plug('session');
         $session->setCookie($key, null);
-        unset($storage['authKey']);
-        unset($storage['authHash']);
+        unset($store['authKey']);
+        unset($store['authHash']);
     }
 
     public function isLogin()
     {
-        $storage = $this['storage'];
-        $key = $storage['authKey'];
-        $hash = $storage['authHash'];
+        $store = $this['store'];
+        $key = $store['authKey'];
+        $hash = $store['authHash'];
         if (!$key || !$hash) {
             return false;
         }
@@ -85,22 +85,24 @@ class auth extends \PMVC\PlugIn
         if ($verify !== $hash) {
             return false;
         }
+        return true;
     }
 
-    public function setIsAuthorized()
+    public function setIsLogin()
     {
-        $storage = $this['storage'];
-        $storage['isAuthorized'] = true;
+        $store = $this['store'];
+        $store['isAuthorized'] = true;
         $guid = \PMVC\plug('guid');
         $key = $guid->gen();
         $value = $guid->gen();
-        $storage['authKey'] = $key; 
-        $storage['authHash'] = $this->hashIsAuth(
+        $store['authKey'] = $key; 
+        $store['authHash'] = $this->hashIsAuth(
             $value,
             \PMVC\get($_COOKIE, $this['bcookie']) 
         );
         $session = \PMVC\plug('session');
         $session->setCookie($key, $value);
+        return $value;
     }
 
     public function hashIsAuth($authValue, $bcookie)
