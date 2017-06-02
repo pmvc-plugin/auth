@@ -8,7 +8,10 @@ auth
 ===============
 
 ## Login Process
-call loginBegin -> ask third party server -> call loginFinish -> handle authorization result
+call loginBegin -> 
+ask third party server -> 
+call loginFinish -> 
+handle authorization result
 
 
 ## Install with Composer

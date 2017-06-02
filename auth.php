@@ -3,27 +3,26 @@ namespace PMVC\PlugIn\auth;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\auth';
 
-const SESSION_KEY = 'pmvc_plugin_auth';
-
 \PMVC\l(__DIR__.'/src/BaseProvider.php');
 \PMVC\l(__DIR__.'/src/BaseUser.php');
 
+if (!class_exists(${_INIT_CONFIG}[_CLASS])) {
 class auth extends \PMVC\PlugIn
 {
-
+    const SESSION_KEY = 'pmvc_plugin_auth';
     public function init()
     {
         $this->initSession();
-        $this['bookie'] = 'b';
+        $this['bcookie'] = 'b';
     }
 
     public function initSession()
     {
         \PMVC\plug('session')->start();
-        if (!isset($_SESSION[SESSION_KEY])) {
-            $_SESSION[SESSION_KEY] = new \PMVC\HashMap();
+        if (!isset($_SESSION[self::SESSION_KEY])) {
+            $_SESSION[self::SESSION_KEY] = new \PMVC\HashMap();
         }
-        $this['storage'] = $_SESSION[SESSION_KEY];
+        $this['storage'] = $_SESSION[self::SESSION_KEY];
     }
 
     public function getProvider($providerId)
@@ -61,7 +60,12 @@ class auth extends \PMVC\PlugIn
 
     public function logout()
     {
-
+        $storage = $this['storage'];
+        $key = $storage['authKey'];
+        $session = \PMVC\plug('session');
+        $session->setCookie($key, null);
+        unset($storage['authKey']);
+        unset($storage['authHash']);
     }
 
     public function isLogin()
@@ -107,12 +111,6 @@ class auth extends \PMVC\PlugIn
         );
     }
 
-    public function setIsRegisted()
-    {
-        $this['storage']['isRegisted'] = true;
-    }
-
-
     public function getDefaultProvider()
     {
         return $this['defaultProvider'];
@@ -134,4 +132,5 @@ class auth extends \PMVC\PlugIn
         $sign = $this['oauth']->build_signature($url, $secret, $token);
         return $sign;
     }
+}
 }
