@@ -105,11 +105,11 @@ class auth extends \PMVC\PlugIn
     {
         $store = $this['store'];
         $key = $store['authKey'];
-        if ($key) {
+        if (!empty($key)) {
             $value = \PMVC\get($_COOKIE, $key);
             $time = \PMVC\plug('guid')->verify($value);
         } else {
-            $time = 0;
+            $time = -1;
         }
         if ($time < date('YmdHis', time() - $this['lifetime'])) {
             return true;
