@@ -73,7 +73,6 @@ class AccountKitProvider extends BaseProvider
         $curl = \PMVC\plug('curl');
         $curl->get($meUrl, function($r) {
             $json = \PMVC\fromJson($r->body);
-            \PMVC\d($json);
             $this->user['id'] = \PMVC\get($json, 'id');
             $this->user['email'] = \PMVC\value($json, ['email','address']);
         }, [
