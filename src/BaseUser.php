@@ -20,6 +20,11 @@ class BaseUser extends HashMap
         $this->_db = ucfirst($providerId).'Users';
     }
 
+    public function getProvider()
+    {
+        return $this->_provider;
+    }
+
     public function getDb()
     {
         return $this->_db;
