@@ -145,13 +145,13 @@ class auth extends \PMVC\PlugIn
         );
     }
 
-    public function setIsRegistered()
+    public function setIsRegistered($registerId)
     {
         if (!$this->isLogin()) {
             return false;
         }
         $store = $this['store'];
-        $store['isRegistered'] = true;
+        $store['isRegistered'] = $registerId;
         return true;
     }
 
