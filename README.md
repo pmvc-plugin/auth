@@ -13,6 +13,20 @@ ask third party server ->
 call loginFinish -> 
 handle authorization result
 
+## Check Login status 
+1. isAuthorized
+2. isRegisted
+
+## How work
+### 1. go to index
+   * Gen return url
+   * Ask third party remote server
+   * Third party server back return result to return url
+### 2. Return url
+   * Check third party server run result
+   * if succcess redirect to success page else go to error page
+
+### 3. Success page or Error page
 
 ## Install with Composer
 ### 1. Download composer
