@@ -1,5 +1,9 @@
 <?php
+
 namespace PMVC\PlugIn\auth;
+
+use DomainException;
+use PMVC\HashMap;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\auth';
 
@@ -32,7 +36,7 @@ class auth extends \PMVC\PlugIn
     {
         \PMVC\plug('session')->start();
         if (!isset($_SESSION[self::SESSION_KEY])) {
-            $_SESSION[self::SESSION_KEY] = new \PMVC\HashMap();
+            $_SESSION[self::SESSION_KEY] = new HashMap();
         }
         $this['store'] = $_SESSION[self::SESSION_KEY];
     }
@@ -42,6 +46,9 @@ class auth extends \PMVC\PlugIn
         if (!isset($this[$providerId])) {
             $config = $this->getConfig($providerId);
             $name = \PMVC\get($config, 'name');
+            if (empty($name) || !$this->isCallable($name)) {
+                throw new DomainException('Provider not exits. ['.$name.']');
+            }
             $provider = $this->$name($config);
             if ($name!==$providerId) {
                 $this[$providerId] = $provider; 
@@ -145,28 +152,35 @@ class auth extends \PMVC\PlugIn
         );
     }
 
-    public function setIsRegistered($registerId)
+    public function setRegistered($registerId)
     {
-        if (!$this->isLogin()) {
+        if (!$this->isLogin() || empty($registerId)) {
             return false;
         }
         $store = $this['store'];
-        $store['isRegistered'] = $registerId;
+        $store['registered'] = $registerId;
         return true;
     }
 
-    public function isRegistered()
+    public function getRegistered()
     {
         if (!$this->isLogin()) {
             return false;
         }
         $store = $this['store'];
-        return $store['isRegistered'];
+        return $store['registered'];
     }
 
-    public function getDefaultProvider()
+    public function getCurrentProvider()
     {
-        return $this['defaultProvider'];
+        return \PMVC\value($this, ['store', 'currentProvider']);
+    }
+
+    public function setCurrentProvider($providerId)
+    {
+        $store = $this['store'];
+        $store['currentProvider'] = $providerId;
+        return $store['currentProvider'];
     }
 
     public function getConfig($providerId)
