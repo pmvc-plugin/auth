@@ -5,6 +5,7 @@ use Facebook\Facebook;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\FacebookProvider';
 
+
 /**
  * API
  *   https://github.com/facebook/php-graph-sdk
@@ -13,6 +14,7 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\FacebookProvider';
 class FacebookProvider extends BaseProvider 
 {
 
+    const GRAPH_URL = 'https://graph.facebook.com/v2.8';
     protected $providerId = 'facebook'; 
 
     /**
@@ -89,6 +91,34 @@ class FacebookProvider extends BaseProvider
 
     public function initUser()
     {
-
+        $fields = [ 
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+            'link',
+            'website',
+            'gender',
+            'locale',
+            'about',
+            'hometown',
+            'birthday'
+        ];
+        $url = \PMVC\plug('url')->getUrl(self::GRAPH_URL.'/me');
+        $url->query->fields = join(',', $fields);
+        $url->query->access_token = (string)$this->getToken('access_token');
+        $curl = \PMVC\plug('curl');
+        $curl->get($url, function ($r) {
+            $json = \PMVC\fromJson($r->body);
+            \PMVC\set($this->user, $json);
+            $this->user->setId(\PMVC\get($json, 'id'));
+            $this->user->setEmail(\PMVC\get($json, 'email'));
+            $this->user->setLegalName(
+                \PMVC\get($json, 'first_name').
+                ' '.
+                \PMVC\get($json, 'last_name')
+            );
+        });
+        $curl->process();
     }
 }

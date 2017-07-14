@@ -14,6 +14,8 @@ if (!class_exists(${_INIT_CONFIG}[_CLASS])) {
 class auth extends \PMVC\PlugIn
 {
     const SESSION_KEY = 'pmvc_plugin_auth';
+    const REGISTERED_KEY = 'registered';
+
     public function init()
     {
         \PMVC\arrayReplace(
@@ -72,7 +74,7 @@ class auth extends \PMVC\PlugIn
         $isAuthorized = $provider->loginFinish($request);
         if ($isAuthorized) {
             $provider->initUser();
-            $this->setIsLogin();
+            $this->setIsAuth();
         }
         return $isAuthorized;
     }
@@ -83,12 +85,10 @@ class auth extends \PMVC\PlugIn
         $key = $store['authKey'];
         $session = \PMVC\plug('session');
         $session->setCookie($key, null);
-        unset($store['authKey']);
-        unset($store['authHash']);
-        unset($store['isRegistered']);
+        $_SESSION[self::SESSION_KEY] = new HashMap();
     }
 
-    public function isLogin()
+    public function isAuth()
     {
         $store = $this['store'];
         $key = $store['authKey'];
@@ -99,10 +99,12 @@ class auth extends \PMVC\PlugIn
         $value = \PMVC\get($_COOKIE, $key);
         $bcookie = \PMVC\get($_COOKIE, $this['bcookie']);
         if (!$value || !$bcookie) {
+            $this->logout();
             return false;
         }
         $verify = $this->hashIsAuth($value, $bcookie);
         if ($verify !== $hash) {
+            $this->logout();
             return false;
         }
         return true;
@@ -110,6 +112,9 @@ class auth extends \PMVC\PlugIn
 
     public function isExpire()
     {
+        if (!$this->isAuth()) {
+            return true;
+        }
         $store = $this['store'];
         $key = $store['authKey'];
         if (!empty($key)) {
@@ -125,7 +130,7 @@ class auth extends \PMVC\PlugIn
         }
     }
 
-    public function setIsLogin()
+    public function setIsAuth()
     {
         $store = $this['store'];
         $guid = \PMVC\plug('guid');
@@ -154,21 +159,21 @@ class auth extends \PMVC\PlugIn
 
     public function setRegistered($registerId)
     {
-        if (!$this->isLogin() || empty($registerId)) {
+        if (!$this->isAuth() || empty($registerId)) {
             return false;
         }
         $store = $this['store'];
-        $store['registered'] = $registerId;
-        return true;
+        $store[self::REGISTERED_KEY] = $registerId;
+        return $store[self::REGISTERED_KEY];
     }
 
     public function getRegistered()
     {
-        if (!$this->isLogin()) {
+        if (!$this->isAuth()) {
             return false;
         }
         $store = $this['store'];
-        return $store['registered'];
+        return $store[self::REGISTERED_KEY];
     }
 
     public function getCurrentProvider()

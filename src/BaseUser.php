@@ -35,8 +35,31 @@ class BaseUser extends HashMap
         return $this['id'];
     }
 
+    public function setId($id)
+    {
+        $this['id'] = $id;
+        return $this['id'];
+    }
+
     public function getEmail()
     {
         return $this['email'];
+    }
+
+    public function setEmail($email)
+    {
+        $this['email'] = $email;
+        return $this['email'];
+    }
+
+    public function getLegalName()
+    {
+        return $this['legalName'];
+    }
+
+    public function setLegalName($legalName)
+    {
+        $this['legalName'] = $legalName;
+        return $this['legalName'];
     }
 }
