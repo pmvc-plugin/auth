@@ -39,7 +39,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $p = \PMVC\plug($this->_plug);
         $_COOKIE[$p['bcookie']] = 'fakeB';
-        $p->setIsLogin(); 
+        $p->setIsAuth(); 
         $store = $p['store'];
         $this->assertNotNull($store['authKey']);
         $this->assertNotNull($store['authHash']);
@@ -52,10 +52,10 @@ class AuthTest extends PHPUnit_Framework_TestCase
    {
         $p = \PMVC\plug($this->_plug);
         $_COOKIE[$p['bcookie']] = 'fakeB';
-        $privateKey = $p->setIsLogin(); 
+        $privateKey = $p->setIsAuth(); 
         $store = $p['store'];
         $_COOKIE[$store['authKey']] = $privateKey;
-        $result = $p->isLogin();
+        $result = $p->isAuth();
         $this->assertTrue($result);
    }
 
@@ -66,7 +66,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
    {
         $p = \PMVC\plug($this->_plug);
         $_COOKIE[$p['bcookie']] = 'fakeB';
-        $privateKey = $p->setIsLogin(); 
+        $privateKey = $p->setIsAuth(); 
         $store = $p['store'];
         $_COOKIE[$store['authKey']] = $privateKey;
         $p['lifetime'] = 100;
