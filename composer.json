@@ -1,19 +1,23 @@
 {
-    "name": "pmvc-plugin/auth",
-    "description": "PMVC authentication lib",
-    "type": "library",
-    "keywords": ["login", "pmvc", "plug-in"],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Hill",
-            "email": "hill@kimo.com"
-        }
-    ],
-    "require": {
-        "pmvc/pmvc": "*",
-        "pmvc-plugin/session": "*",
-        "facebook/graph-sdk": "*"
-    },
-    "minimum-stability": "dev"
+  "name": "pmvc-plugin/auth",
+  "description": "PMVC authentication lib",
+  "type": "library",
+  "keywords": ["login", "pmvc", "plug-in"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Hill",
+      "email": "hill@kimo.com"
+    }
+  ],
+  "require": {
+    "pmvc/pmvc": "*",
+    "pmvc-plugin/session": "*",
+    "pmvc-plugin/guid": "*",
+    "facebook/graph-sdk": "*"
+  },
+  "require-dev": {
+    "pmvc-plugin/unit": "*"
+  },
+  "minimum-stability": "dev"
 }

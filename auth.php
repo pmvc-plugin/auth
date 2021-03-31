@@ -4,6 +4,7 @@ namespace PMVC\PlugIn\auth;
 
 use DomainException;
 use PMVC\HashMap;
+use PMVC\PlugIn;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\auth';
 
@@ -11,18 +12,14 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\auth';
 \PMVC\l(__DIR__.'/src/BaseUser.php');
 
 if (!class_exists(${_INIT_CONFIG}[_CLASS])) {
-class auth extends \PMVC\PlugIn
+class auth extends PlugIn
 {
     const SESSION_KEY = 'pmvc_plugin_auth';
     const REGISTERED_KEY = 'registered';
 
     public function init()
     {
-        \PMVC\arrayReplace(
-            $this,
-            \PMVC\get($this),
-            $this->defaultValue()
-        );
+        $this[$this->defaultValue()] = []; // merge default value
         $this->initSession();
     }
 
@@ -123,7 +120,7 @@ class auth extends \PMVC\PlugIn
         } else {
             $time = -1;
         }
-        if ($time < date('YmdHis', time() - $this['lifetime'])) {
+        if ($time < gmdate('YmdHis', time() - $this['lifetime'])) {
             return true;
         } else {
             return false;

@@ -1,17 +1,18 @@
 <?php
 namespace PMVC\PlugIn\auth;
 
-use PHPUnit_Framework_TestCase;
+use PMVC\TestCase;
 
-\PMVC\Load::plug();
-\PMVC\addPlugInFolders(['../']);
-\PMVC\plug('session', ['disableStart'=>true]);
+\PMVC\Load::plug(
+    ['unit' => null, 'session' => ['disableStart' => true]],
+    ['../']
+);
 
-class AuthTest extends PHPUnit_Framework_TestCase
+class AuthTest extends TestCase
 {
     private $_plug = 'auth';
 
-    function setup()
+    function pmvc_setup()
     {
         \PMVC\unplug($this->_plug);
     }
@@ -22,7 +23,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
         print_r(\PMVC\plug($this->_plug));
         $output = ob_get_contents();
         ob_end_clean();
-        $this->assertContains($this->_plug,$output);
+        $this->assertContains($this->_plug, $output);
     }
 
     function testHashIsAuth()
@@ -32,46 +33,53 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('ba4TuD1iozTxw', $hash);
     }
 
-   /**
-    * @runInSeparateProcess
-    */
+    function testIsMergeDefaultValue()
+    {
+        $p = \PMVC\plug($this->_plug, ['bcookie'=>'foo']);
+        $this->assertEquals('foo', $p['bcookie']);
+        $this->assertEquals(86400*7, $p['lifetime']);
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
     function testSetIsAuthorized()
     {
         $p = \PMVC\plug($this->_plug);
         $_COOKIE[$p['bcookie']] = 'fakeB';
-        $p->setIsAuth(); 
+        $p->setIsAuth();
         $store = $p['store'];
         $this->assertNotNull($store['authKey']);
         $this->assertNotNull($store['authHash']);
     }
 
-   /**
-    * @runInSeparateProcess
-    */
-   function testIsLogin()
-   {
+    /**
+     * @runInSeparateProcess
+     */
+    function testIsLogin()
+    {
         $p = \PMVC\plug($this->_plug);
         $_COOKIE[$p['bcookie']] = 'fakeB';
-        $privateKey = $p->setIsAuth(); 
+        $privateKey = $p->setIsAuth();
         $store = $p['store'];
         $_COOKIE[$store['authKey']] = $privateKey;
         $result = $p->isAuth();
         $this->assertTrue($result);
-   }
+    }
 
-   /**
-    * @runInSeparateProcess
-    */
-   function testIsExpire()
-   {
+    /**
+     * @runInSeparateProcess
+     */
+    function testIsExpire()
+    {
         $p = \PMVC\plug($this->_plug);
         $_COOKIE[$p['bcookie']] = 'fakeB';
-        $privateKey = $p->setIsAuth(); 
+        $privateKey = $p->setIsAuth();
         $store = $p['store'];
         $_COOKIE[$store['authKey']] = $privateKey;
         $p['lifetime'] = 100;
         $this->assertFalse($p->isExpire());
         $p['lifetime'] = -1;
         $this->assertTrue($p->isExpire());
-   }
+    }
 }
